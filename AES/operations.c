@@ -1,7 +1,5 @@
 #include "operations.h"
 
-#define MX 0x1B
-
 static uint8_t xtime_table[256][7] =
 {
 	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
@@ -262,7 +260,6 @@ static uint8_t xtime_table[256][7] =
 	{ 0xE5, 0xD1, 0xB9, 0x69, 0xD2, 0xBF, 0x65 }
 };
 
-
 static uint8_t gsb(uint8_t n)
 {
 	uint8_t i, bit;
@@ -277,7 +274,6 @@ static uint8_t gsb(uint8_t n)
 
 uint8_t byte_mul(uint8_t a, uint8_t b)
 {
-	uint8_t table[7];
 	uint8_t bigbit = gsb(b);
 	uint8_t acc;
 	int i;
@@ -285,16 +281,16 @@ uint8_t byte_mul(uint8_t a, uint8_t b)
 	acc = b & 1 ? a : 0;
 	for(i = 1; i <= bigbit; i++)
 	{
-		if((b << i) & 1) acc ^= xtime_table[a][i - 1];
+		if((b >> i) & 1) acc ^= xtime_table[a][i - 1];
 	}
 
 	return acc;
 }
 
-void col_mul(aes_column_t dest, aes_column_t other)
+void col_mul(aes_word_t dest, aes_word_t other)
 {
 	int i, j;
-	aes_column_t d = {0, 0, 0, 0};
+	aes_word_t d = {0, 0, 0, 0};
 
 	for(i = 0; i < Nb; i++)
 	{

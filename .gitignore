@@ -1,2 +1,4 @@
 AES/gen_polymul.c
 AES/table.txt
+AES/tests.c
+*/a.out
