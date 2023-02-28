@@ -14,18 +14,27 @@ void aes_fill_key(const uint8_t bytes[Nb * Nk], aes_key_t key)
 	}
 }
 
+void aes_fill_block(const uint8_t *bytes, size_t len, aes_block_t block)
+{
+	int i, j;
+	size_t c;
+	for(i = 0, c = 0; i < Nb; i++)
+		for(j = 0; j < 4; j++)
+			block[i][j] = c < len ? bytes[c++] : 0;
+}
+
 size_t aes_fill_blocks(const uint8_t *bytes, size_t len, aes_block_t **blocks)
 {
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 	int i, j;
 	size_t b, c;
 	size_t n_blocks = (len / sizeof(aes_block_t)) + (len % sizeof(aes_block_t) != 0);
 
 	*blocks = calloc(len, sizeof(aes_block_t));
 
-	for(b = 0, c = 0; b < n_blocks && c < len; b++)
-		for(i = 0; i < Nb && c < len; i++)
-			for(j = 0; j < 4 && c < len; j++)
-				(*blocks)[b][i][j] = bytes[c++];
+	for(b = 0, c = 0; b < n_blocks; b++, c += 16)
+		aes_fill_block(&bytes[c], MIN(16, len - c), (*blocks)[b]);
 
 	return n_blocks;
 }
