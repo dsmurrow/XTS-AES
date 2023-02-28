@@ -63,6 +63,14 @@ void aes_enc_block(aes_block_t block, aes_key_schedule w)
 	AddRoundKey(block, w, Nr);
 }
 
+void aes_empty_block(aes_block_t block, uint8_t *ptr, size_t len)
+{
+	int x, y, c;
+	for(x = 0, c = 0; x < Nb && c < len; x++)
+		for(y = 0; y < 4 && c < len; y++)
+			ptr[c++] = block[x][y];
+}
+
 void aes_dec_block(aes_block_t block, aes_key_schedule w)
 {
 	int r;
